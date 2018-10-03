@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DATA1001</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Peter Straka" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# DATA1001
+## Probability Theory
+### Peter Straka
+### Week 09, 2018-09-17
+
+---
+
+
+
+
+## Remaining schedule
+
+
+| When              | Lecture                     | Tutorials
+| ----------------  |--------------------------   |------------------------
+| Week 09           | Probability        | CSE
+| Teaching Recess   |    ---------                |     ---------
+| Week 10           |    ---------                | Stats
+| Week 11           | Classification              | Stats
+| Week 12           | Clustering                  | Stats
+| Week 13           | Text Mining                 | Stats
+
+
+
+---
+
+
+
+
+# Probability
+
+In order to use data to understand the world and to make predictions about 
+the future, statisticians construct models that are plausible for having 
+produced the data. 
+The process of constructing such models is called **inference**. 
+
+The workings of a model, and how a model creates data, is based on the rules 
+of **probability**.
+Understanding probability is the key to understanding models, to doing 
+inference, and to make predictions. 
+
+
+The goal of Week 09 is for you to:
+
+* understand probability mathematically and intuitively via relative 
+  frequencies
+* understand what it means to sample from a probability distribution
+* understand independence and conditional probability
+
+
+---
+
+## Definitions
+
+### Sample Space:
+
+The set of all possible outcomes. Usually denoted by `\(\Omega\)`.
+
+There are two main types of sample spaces: Either you can make a 
+(possibly infinite) list of all possible outcomes... or you can't. 
+In the first case, the sample space is called **"discrete"**; we will deal with this 
+case first. 
+
+*Examples:* \{Heads, Tails\}; \{1,2,3,4,5,6\}; \{F, P, C, D, HD\}
+
+### Event: 
+
+Any subset of the sample space. 
+
+*Examples:* 
+H = \{Head\} for the coin toss; E = \{2, 4, 6\} for the die roll; 
+S = \{HD, D\} for the grade letter. 
+
+---
+
+### Complement: 
+
+
+
+.pull-left[
+
+For an event `\(A\)`, the complement `\(A^\complement\)` is the set of all outcomes which are not in `\(A\)`. 
+
+*Example:* For the die roll, `\(\{1,3,5\}^\complement = \{2,4,6\}\)`
+
+]
+
+.pull-right[
+
+![](Complement.png) 
+
+]
+
+---
+
+
+### Intersection: 
+
+.pull-left[
+
+For two events `\(A\)` and `\(B\)`, the intersection `\(A \cap B\)` is the event of all 
+outcomes which are in both `\(A\)` and `\(B\)`:
+
+$$
+A \cap B = \{\omega \in \Omega: \omega \in A \text{ and } \omega \in B\}
+$$
+
+*Example:* `\(\{1,2,3\} \cap \{1,3,5\} = \{1,3\}\)`
+
+]
+
+.pull-right[
+
+![](Intersection.png) 
+
+]
+
+
+---
+
+
+### Union: 
+
+.pull-left[
+
+For two events `\(A\)` and `\(B\)`, the union `\(A \cup B\)` is the set of outcomes 
+which are in `\(A\)` or in `\(B\)` or in both: 
+
+$$
+A \cup B = \{\omega \in \Omega: \omega \in A \text{ or } \omega \in B\}
+$$
+
+*Example:* `\(\{1,2,3\} \cup \{1,3,5\} = \{1,2,3,5\}\)`
+
+]
+
+.pull-right[
+
+![](Union.png)
+
+]
+
+
+---
+
+### Probability: 
+
+A number between 0 and 1 (inclusive). More meaning will follow.
+
+### Probability distribution: 
+
+A function `\(\mathbf P\)` which maps events to probabilities
+and which satisfies three axioms (see below). 
+For an event `\(A\)`, write `\(\mathbf P(A)\)` for its probability. 
+
+---
+
+ 
+## Probability Axioms
+
+### Axiom 1
+
+The probability for the set of all possible outcomes is 1: 
+$$
+\mathbf P(\Omega) = 1
+$$
+
+### Axiom 2
+
+$$
+\mathbf P(A^\complement) = 1 - \mathbf P(A).
+$$ 
+
+---
+
+### Axiom 3
+
+.pull-left[
+
+Two events `\(A\)` and `\(B\)` are disjoint if they have no outcomes in common. 
+If `\(A\)` and `\(B\)` are disjoint, then 
+$$
+\mathbf P(A \cup B) = \mathbf P(A) + \mathbf P(B) 
+$$
+
+*Exercise:* Derive the general addition rule: 
+$$
+\mathbf P(A \cup B) = \mathbf P(A) + \mathbf P(B) - \mathbf P(A \cap B)
+$$
+
+(Hint: `\(A = (A \cap B) \cup (A \cap B^\complement)\)`.)
+
+]
+
+.pull-right[
+
+![Venn diagram of two disjoint sets](Disjoint.png)
+
+]
+
+
+---
+
+## Binomial distribution
+
+You sit at cafe on campus and see a student taking a picture. 
+Consider the sample space 
+`\(\Omega\)` consisting of the two events `\(F\)` and `\(M\)` that the student is 
+female or male. Suppose for now that `\(M = F^\complement\)` and 
+`\(\mathbf P(F)=0.6\)`. 
+
+Then the probability distribution is uniquely specified, because we know 
+the probabilities of all outcomes: `\(\mathbf P(M) = 0.4\)` and 
+`\(\mathbf P(M^\complement) = 0.6\)`. 
+
+If there are two outcomes, the probability distribution is called 
+the _Binomial distribution_, and usually the outcomes are referred to as 0 
+and 1. The Binomial distribution allows repeated outcomes (see 
+`n` parameter below), but here we have only one. 
+If `n=1`, the Binomial distribution is also called a Bernoulli distribution.
+
+In the above example, when you see a student, the outcome is specified (M or F; 0 or 1). 
+In statistics, we say you have sampled from the distribution. In R, we can 
+sample from a binomial distribution as follows: 
+
+
+---
+
+
+```r
+rbinom(n = 1, size = 1, prob = PM)
+```
+
+```
+## [1] 1
+```
+
+We can observe 10 outcomes and list them individually 
+
+
+```r
+rbinom(n = 10, size = 1, prob = PM)
+```
+
+```
+##  [1] 1 0 0 0 0 0 1 1 0 0
+```
+
+or we can count the number of 1's: 
+
+
+```r
+rbinom(n = 1, size = 10, prob = PM)
+```
+
+```
+## [1] 4
+```
+
+If the probability of a 1 is 0.4, then "in the long run", the fraction 
+of 1's will approach 0.4:
+
+---
+
+![](index_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+This fact is called the _Law of Large Numbers_. 
+We will use the above as conceptual definition for the meaning of a 
+probability.
+
+---
+
+
+## Independence
+
+### Definition: 
+
+Two events `\(A\)` and `\(B\)` are independent if 
+$$
+\mathbf P(A \cap B) = \mathbf P(A) \mathbf P(B).
+$$ 
+
+Consider the two events `\(L\)` that the picture the student takes is in
+landscape format, and `\(L^\complement\)` that it is in portrait format. 
+Suppose that `\(\mathbf P(L) = 0.7\)`. 
+
+The events `\(M\)` and `\(L\)` are independent if 
+$$
+\mathbf P(M \cap L) = \mathbf P(M) \mathbf P(L) = 0.4 \times 0.7 = 0.28.
+$$
+It then also follows that the pairs ( `\(M\)` and `\(L^\complement\)` ), 
+( `\(M^\complement\)` and `\(L\)` ) and ( `\(M^\complement\)` and `\(L^\complement\)` )
+are independent. (You can show this.)
+
+---
+
+Now consider the sample space of the four possible outcomes: 
+"male and landscape", "female and landscape", "male and portrait", 
+"female and portrait". 
+We can write the probabilities in table form: 
+
+
+```r
+Lvec &lt;- c(PL, 1-PL)
+Mvec &lt;- c(PM, 1-PM)
+names(Lvec) &lt;- c("L", "notL")
+names(Mvec) &lt;- c("M", "notM")
+outer(Lvec, Mvec)
+```
+
+```
+##         M notM
+## L    0.28 0.42
+## notL 0.12 0.18
+```
+
+
+
+Read as:
+
+* Take the fraction 0.4 of male population. A fraction of 0.7 of them are taking pictures landscape. Or: 
+
+* Take the 0.7 of the landscape-taking students. A fraction of 0.4 of them are male
+
+* ... 
+
+---
+
+Let's simulate, independently, the _landscape_ event: 
+
+
+
+```r
+L &lt;- rbinom(n = n, size = 1, prob = 0.7)
+```
+
+For our student population, we now know whether or not they are 
+male (1's, first row below) and whether they took the picture landscape (1's, second row below):
+
+
+```r
+head(M, n = 20)
+```
+
+```
+##  [1] 0 0 0 0 0 0 0 1 0 0 0 0 0 1 1 1 0 1 0 0
+```
+
+```r
+head(L, n = 20)
+```
+
+```
+##  [1] 1 1 1 1 1 0 1 0 0 1 0 0 1 1 1 1 0 0 0 1
+```
+
+
+How often did `\(M \cap L\)` happen? 
+
+
+```r
+sum(M * L) / length(M)
+```
+
+```
+## [1] 0.27951
+```
+
+---
+
+### Relative Frequency
+
+This number is called a _relative frequency_. Just like the probaiblities, 
+we can cross-tabulate the relative frequencies: 
+
+
+```r
+Lvec2 &lt;- factor(L)
+Mvec2 &lt;- factor(M)
+levels(Lvec2) &lt;- c("notL", "L")
+levels(Mvec2) &lt;- c("notM", "M")
+table(Lvec2, Mvec2) / length(M)
+```
+
+```
+##       Mvec2
+## Lvec2      notM        M
+##   notL 0.180325 0.119658
+##   L    0.420507 0.279510
+```
+
+
+We can see that the relative frequencies are close to the probabilities 
+from the previous table.
+
+
+
+Another way to state 
+the Law of Large numbers is that 
+
+&gt; In large samples, the relative frequency of an event will be close to its
+&gt; probability. 
+
+
+---
+
+
+## Conditional Probability
+
+Probabilities of events may be taken conditional on another event
+occurring.
+
+**Definition:**
+
+Let `\(A\)` and `\(B\)` be two events. The probability of `\(A\)` given `\(B\)` is 
+$$
+\mathbf P(A | B) = \frac{\mathbf P(A \cap B)}{\mathbf P(B)}
+$$
+
+You may interpret the above as: Suppose the sample space `\(\Omega\)` is restricted to `\(B\)`, what then is the probability of `\(A\)`? 
+
+---
+
+### Independence and Conditional probability 
+
+If `\(A\)` and `\(B\)` are independent, then `\(\mathbf P(A | B) = \mathbf P(A)\)` (show this). 
+
+In our simulated population of 10^{6} students, a proportion of 0.7 take landscape pictures, which is `\(\mathbf P(L)\)`. 
+
+Within the population of males, the proportion of landscape picture takers is 0.7, which is `\(\mathbf P(L | M)\)`. 
+
+In fact, we have `\(\mathbf P(L | M) = \mathbf P(L) = 0.7\)`, because in our model of `\(M\)` and `\(L\)` these two events are independent. 
+
+
+Let us change our assumptions and assume that male students are more likely
+than female students to take landscape format pictures: 
+$$
+\mathbf P(L | M) = 0.7, \quad \mathbf P(L | F) = 0.2.
+$$
+but we assume the fraction of males has not changed and is still 0.4. 
+
+We can then compute 
+$$
+\mathbf P(M\cap L) = \mathbf P(M) \mathbf P(L | M) = 0.4 \times 0.7
+= 0.28, ... 
+$$
+
+and so we could draw a new probability table.
+
+
+---
+
+### Tree diagram
+
+Alternatively, we can draw a tree diagram: 
+
+![_A tree diagram visualizing conditional probability_](tree-diagram.png)
+
+
+---
+
+# Random Variables
+
+A random variable is variable (a number) whose value is based on the outcome 
+of a random event. 
+
+_Examples:_ 
+
+* G (for Gender) that takes two values, 0 or 1. If the event `\(M\)` eventuates, 
+  then G=0, otherwise G=1. 
+* R (for die roll) that takes values in the set \{1,2,3,4,5,6\}. 
+* ...
+
+Note that random variables also define events: for example, 
+"G=1" is an event, as well as "R=4". 
+We then write 
+$$
+\mathbf P(G=1) = 0.6, \quad \mathbf P(R=4) = 1/6.
+$$
+
+Variables in Data Frames will be interpreted as random variables; see further below. 
+
+---
+
+### Distribution: 
+
+The distribution of a random variable specifies the probabilities of all 
+its possible values. 
+
+
+### Independence:
+
+Two random variables `\(X\)` and `\(Y\)` are independent if the events 
+`\(X=x\)` and `\(Y=y\)` are independent, for all possible values 
+`\(x\)` of `\(X\)` and `\(y\)` of `\(Y\)`.
+
+---
+
+## Example: Titanic Data
+
+We use the [Titanic Dataset](https://www.kaggle.com/c/titanic/data) 
+from kaggle: 
+
+
+```r
+library(readr)
+titanic &lt;- read_csv("../../data/titanic/train.csv")
+head(titanic)
+```
+
+```
+## # A tibble: 6 x 12
+##   PassengerId Survived Pclass Name  Sex     Age SibSp Parch Ticket  Fare
+##         &lt;int&gt;    &lt;int&gt;  &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;dbl&gt;
+## 1           1        0      3 Brau… male     22     1     0 A/5 2…  7.25
+## 2           2        1      1 Cumi… fema…    38     1     0 PC 17… 71.3 
+## 3           3        1      3 Heik… fema…    26     0     0 STON/…  7.92
+## 4           4        1      1 Futr… fema…    35     1     0 113803 53.1 
+## 5           5        0      3 Alle… male     35     0     0 373450  8.05
+## 6           6        0      3 Mora… male     NA     0     0 330877  8.46
+## # ... with 2 more variables: Cabin &lt;chr&gt;, Embarked &lt;chr&gt;
+```
+
+
+---
+
+Note that R has a built-in dataset `Titanic`, so be case-sensitive.
+
+This dataset is a sample from some unknown distribution. We don't know any probabilities, we can only calculate relative frequencies. But we trust that the sample is big enough so that relative frequencies are useful approximations of probabilities. 
+Even though this is not entirely correct, we will sometimes 
+say "probability" below when we actually mean "relative frequency". 
+
+---
+
+First, let's extract the relative frequencies of survival and passenger class:
+
+
+```r
+n &lt;- dim(titanic)[1]
+PSurvived &lt;- table(titanic$Survived) / n 
+PPclass &lt;- table(titanic$Pclass) / n
+PSurvived
+```
+
+```
+## 
+##         0         1 
+## 0.6161616 0.3838384
+```
+
+```r
+PPclass
+```
+
+```
+## 
+##         1         2         3 
+## 0.2424242 0.2065095 0.5510662
+```
+
+
+We interpret `Survived` as a random variable, with distribution 
+$$
+\mathbf P({\tt Survived} = 0) = 0.6161616, \quad
+\mathbf P({\tt Survived} = 1) = 0.3838384
+$$
+
+Similarly, `Pclass` is a random variable, with distribution
+
+$$
+\mathbf P({\tt Pclass} = 1) = 0.24, \quad
+\mathbf P({\tt Pclass} = 2) = 0.21, \quad 
+\mathbf P({\tt Pclass} = 3) = 0.55
+$$
+
+---
+
+### (Wrongly) assuming independence
+
+If `Survived` and `Pclass` were independent, we could specify their
+joint probability tables: 
+
+
+```r
+independence_table &lt;- outer(PSurvived, PPclass)
+independence_table
+```
+
+```
+##    
+##              1          2         3
+##   0 0.14937251 0.12724325 0.3395459
+##   1 0.09305173 0.07926629 0.2115204
+```
+
+The `independence_table` contains the products of `PSurvived` and `Pclass`. 
+For instance, the bottom lower entry is 
+$$
+\mathbf P({\tt Survived=1}) \times \mathbf P({\tt Pclass=2})
+= 0.0792663
+$$
+
+By assumption of independence, this is also the probability of the event 
+$$
+"{\tt Survived=1}" \cap "{\tt Pclass = 2}".
+$$
+
+---
+
+Here the `outer(x,y)` function looks at all possible combinations 
+of entries in `x` with entries in `y` and computes the products, see 
+this example: 
+
+
+```r
+outer(c(1,2), c(1,2,3))
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    2    4    6
+```
+
+---
+
+### The actual data
+
+For the actual data, we find the following frequencies: 
+
+
+```r
+actual_table &lt;- table(titanic$Survived, titanic$Pclass) / n
+actual_table
+```
+
+```
+##    
+##              1          2          3
+##   0 0.08978676 0.10886644 0.41750842
+##   1 0.15263749 0.09764310 0.13355780
+```
+
+This table contains the relative frequencies of the events 
+`Survived=i` and `Pclass=j` where `i` can be 0 or 1 and `j` can be any value 
+1, 2 or 3. 
+
+---
+
+### Compare
+
+We compare the relative frequencies from the data (`actual_table`) with the relative frequencies we get under the assumption of independence (`independence_table`): 
+
+
+```r
+actual_table - independence_table
+```
+
+```
+##    
+##               1           2           3
+##   0 -0.05958576 -0.01837681  0.07796257
+##   1  0.05958576  0.01837681 -0.07796257
+```
+
+We see that in first class around 6% more people survived than we would expect under the assumption that survival was independent of class! Similarly, almost 8% more of third class died than expected. 
+
+---
+
+
+### Side note 
+
+In an introductory statistics course, you would learn about 
+a Chi-Squared test, a tool that can quantify the amount of evidence you 
+have against the hypothesis that `Survival` and `Pclass` are independent. 
+
+
+```r
+chisq.test(titanic$Survived, titanic$Pclass)
+```
+
+```
+## 
+## 	Pearson's Chi-squared test
+## 
+## data:  titanic$Survived and titanic$Pclass
+## X-squared = 102.89, df = 2, p-value &lt; 2.2e-16
+```
+
+---
+
+### Exercises
+
+Calculate `\(\mathbf P({\tt Survived = 1} | {\tt Pclass = i})\)` for 
+all values of `i`. 
+
+
+```r
+actual_table[2, ] / apply(X = actual_table, MARGIN = 2, FUN = sum)
+```
+
+```
+##         1         2         3 
+## 0.6296296 0.4728261 0.2423625
+```
+
+
+Calculate `\(\mathbf P({\tt Pclass = 1} | {\tt Survived = i})\)`
+for `i` taking values 0 and 1. 
+
+
+```r
+actual_table[, 1] / apply(X = actual_table, MARGIN = 1, FUN = sum)
+```
+
+```
+##         0         1 
+## 0.1457195 0.3976608
+```
+
+
+---
+
+
+## Bayes' theorem
+
+Also called Bayes' formula:
+
+$$
+\mathbf P(A | B) = \frac{\mathbf P(A) \mathbf P(B|A)}{\mathbf P(B)}
+$$
+
+It follows quite easily from the definition of conditional probability (show this). 
+
+_Exercise:_ Calculate `\(\mathbf P(M | L^\complement)\)`, i.e. the probability that a student _who is taking a portrait photo_ is male.
+
+
+_Exercise:_ Draw a tree diagram for the two variables `Pclass` and `Survived`.
+
+
+---
+
+# Continuous Probability distributions
+
+So far, we were able to list the outcomes of a random variable: \{head, tail\}, \{1,2,3,4,5,6\}, \{male, female\}. 
+
+Now consider a random variable which describes the random **length** of an object; e.g. body length, or distance travelled. 
+
+Now between any two points, there is always another point. 
+
+So there can't be an ordered list that comprises all possible values. 
+
+(In fact, mathematicians know that there can't even be an infinite unordered list of all possible values.)
+
+---
+
+
+### Probability Density
+
+A continuous probability distribution is defined by a curve `\(f(x)\)` called the 
+**probability density**. 
+
+See the standard example of a Gaussian distribution (normal distribution): 
+
+
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+x &lt;- seq(from=-4, to=4, length.out = 100)
+density &lt;- dnorm(x)
+df &lt;- data.frame(x,density)
+density_plot &lt;- df %&gt;% 
+  ggplot(aes(x=x)) + 
+  geom_line(aes(y=density)) 
+density_plot + 
+  geom_area(data = filter(df, x &gt;= 0 &amp; x &lt;= 2), mapping = aes(y=density), fill='gray')
+```
+
+![](index_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+The main difference to discrete distributions is that _ranges_ of values 
+are assigned a probability (as opposed to individual values). 
+In general, a range `\([a,b]\)` of values is assigned the integral 
+$$
+\int_a^b f(x)\,dx
+$$
+
+If you're not familiar with integrals, for this course it's enough to think 
+of the integral as the area between the curve, `\(a\)`, and `\(b\)`. 
+
+(But if you want to become a Data Scientist, there's no way around integrals and derivatives.)
+
+Above is an example where `\(a=0\)` and `\(b=2\)`. 
+For the _event_ that a random variable, say `\(X\)`, takes a value between 0 and 2, we write `\(X \in [0,2]\)` or `\(0 \le X \le 2\)`. The probability of this event is
+$$
+\mathbf P(0 \le X \le 2) = \int_0^2 f(x)\,dx
+$$
+
+Also observe: 
+
+* The entire area under the curve is `\(1\)` (compare Axiom 1)
+* `\(\mathbf P(X \le x) = 1 - \mathbf P(X &gt; x)\)` (compare Axiom 2)
+* `\(\mathbf P((X \le 1) \cup (X &gt; 2)) = \mathbf P(X \le 1) + \mathbf P(X &gt; 2)\)` 
+  (compare Axiom 3). 
+
+---
+
+
+### Generating samples from a continuous distribution
+
+A continuous probability distribution is a **model** for continuous random variables. 
+
+To draw a finite sample from a continuous probability distribution is a mathematically deep concept, involving random number generators and a technique called the "inverse function transform". 
+
+You're "only" expected to develop an intuition about what it means to sample from a continuous distribution. 
+
+The code below should help you with this: it draws a sample of size 50 (the blue crosses) from the Gaussian distribution (black curve). 
+
+---
+
+
+
+```r
+samp &lt;- data.frame(x = rnorm(50))
+density_plot + geom_point(data = samp, mapping = aes(x = x, y = 0),
+                          shape='+', size=5, colour='blue')
+```
+
+![](index_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+
+
+---
+
+Observe that
+
+* No two samples are the same (try this)
+* Even though the Gaussian curve is perfectly symmetric, no sample is symmetric
+* In the long run (for many samples) the fraction of points in any interval `\([a,b]\)` will approach the probability `\(\mathbf P(a \le X \le b)\)`
+
+
+The Gaussian curve is just one example of a distribution; for many more, see e.g. [this shiny app](https://uasnap.shinyapps.io/rvdist/) which visualizes the main continuous and discrete distributions. 
+
+
+---
+
+
+### Inference
+
+In real life, when we have a sample, we are interested in the underlying probability distribution from which the sample was taken. 
+The main reason for this is that, if we know the underlying probability distribution, we have a model for future data, and we can make predictions.
+
+So, suppose we have the following sample: 
+
+
+```r
+p_samp &lt;- samp %&gt;% ggplot(aes(x=x)) + 
+  geom_point(y=0, shape='+', colour = 'blue', size = 5) + 
+  ylim(-0.1,0.1) + xlim(-3,3)
+p_samp
+```
+
+![](index_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+
+How do we decide a probability density from which the sample could have been drawn?
+
+---
+
+Recall that we can plot a histogram, to summarise and display the sample: 
+
+
+```r
+p_samp_hist &lt;- p_samp + 
+  geom_histogram(aes(y=stat(density)), alpha = 0.3) + 
+  ylim(0,0.75)
+p_samp_hist
+```
+
+![](index_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+
+---
+
+
+A **kernel density estimate** goes further and estimates the underlying density with a curve: 
+
+
+```r
+p_samp_hist_kde &lt;- p_samp_hist + geom_density(colour="darkred")
+p_samp_hist_kde
+```
+
+![](index_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+(Learn more about kernel density estimators in a non-parametric statistics class.)
+
+---
+
+
+Recall that the sample was drawn from a Gaussian distribution; let's overlay it. As a reminder that we typically don't know it, we draw it as a dashed line:
+
+
+
+```r
+p_samp_hist_kde + geom_line(mapping = aes(x=x, y=density), 
+                            data = df, linetype='dashed')
+```
+
+![](index_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+
+The larger our sample, the better the closer the kernel density estimate will be to the underlying probability distribution. (Try increasing the sample size and see for yourself!)
+
+
+---
+
+### Age of Titanic passengers
+
+
+```r
+titanic %&gt;% ggplot(mapping = aes(x=Age)) + geom_density(col="darkred") + 
+  geom_point(aes(y=0), size=3, shape='+', col="blue") + 
+  geom_histogram(aes(y=stat(density)), alpha=0.3)
+```
+
+![](index_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+### Age and Survival
+
+Is the `Survival` variable independent of the `Age` variable?
+
+
+```r
+titanic$Survived &lt;- factor(titanic$Survived)
+levels(titanic$Survived) &lt;- c("died", "survived")
+titanic %&gt;% ggplot(mapping = aes(x=Age, col=Survived)) + geom_density()
+```
+
+![](index_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
